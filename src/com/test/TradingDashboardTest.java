@@ -2,13 +2,15 @@ package com.test;
 
 import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.junit.Test;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,6 +18,7 @@ import java.util.Date;
 public class TradingDashboardTest {
 
     private WebDriver browser;
+    static  String appURL = "http://localhost:9000";
 
     static String getCurrentTimestamp() {
 
@@ -29,32 +32,60 @@ public class TradingDashboardTest {
         browser = new ChromeDriver();
     }
 
+    private void create_a_new_order(final WebDriver browser, final String side, double quantity, double price, final String notes) {
+        browser.findElement(By.id("side")).sendKeys(side);
+        browser.findElement(By.id("quantity")).sendKeys(String.valueOf(quantity));
+        browser.findElement(By.id("price")).sendKeys(String.valueOf(price));
+        browser.findElement(By.id("notes")).sendKeys(notes);
+        browser.findElement(By.id("btn_send_order")).click();
+    }
+
     @Test
     public void new_order_creation() {
 
-        browser.get("http://localhost:9000");
-        WebElement header = browser.findElement(By.id("in"));
-        assertTrue((header.isDisplayed()));
+        browser.get(appURL);
 
         final String orderNotes = getCurrentTimestamp();
 
         // Send a new order
-        browser.findElement(By.xpath("(//*[@id=\"in\"])[1]")).sendKeys("S");
-        browser.findElement(By.xpath("(//*[@id=\"in\"])[2]")).sendKeys("10000");
-        browser.findElement(By.xpath("(//*[@id=\"in\"])[3]")).sendKeys("7800");
-        browser.findElement(By.xpath("(//*[@id=\"in\"])[4]")).sendKeys(orderNotes);
-        browser.findElement(By.xpath("//*[@id=\"btn\"]")).click();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
+        create_a_new_order(browser, "S", 10000, 7800, orderNotes);
 
         // Verify that new order got created
-        final String lastOrder = browser.findElement(By.xpath("//*[@id=\"orders\"]/tr[2]")).getText();
-        System.out.println(String.format("New order: %s", lastOrder));
+        WebDriverWait wait = new WebDriverWait(browser, 5);
+        final WebElement lastOrder = browser.findElement(By.xpath("//*[@id=\"orders\"]/tr[2]"));
+        wait.until(ExpectedConditions.textToBePresentInElement(lastOrder, orderNotes));
 
-        assertTrue(lastOrder.contains(orderNotes));
+        System.out.println(String.format("New order: %s", lastOrder.getText()));
+        assertEquals(lastOrder.findElement(By.id("order_notes")).getText(), orderNotes);
+    }
+
+    @Test
+    public void order_cancellation() {
+
+        browser.get(appURL);
+
+        final String orderNotes = getCurrentTimestamp();
+
+        // Send a new order
+        create_a_new_order(browser, "S", 10000, 7800, orderNotes);
+
+        // Verify that new order got created
+        WebDriverWait wait = new WebDriverWait(browser, 5);
+        final WebElement lastOrder = browser.findElement(By.xpath("//*[@id=\"orders\"]/tr[2]"));
+        wait.until(ExpectedConditions.textToBePresentInElement(lastOrder, orderNotes));
+
+        System.out.println(String.format("New order: %s", lastOrder.getText()));
+        assertEquals(lastOrder.findElement(By.id("order_notes")).getText(), orderNotes);
+
+        // cancel the newly created order
+        lastOrder.findElement(By.id("order_cancel")).click();
+
+        WebElement status = lastOrder.findElement(By.id("order_status"));
+
+        // verify that order status get updated accordingly
+        final String cancelledStatus = "C";
+        wait.until(ExpectedConditions.textToBePresentInElement(status, cancelledStatus));
+        assertEquals(status.getText(), cancelledStatus);
     }
 
     @After
