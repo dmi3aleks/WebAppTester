@@ -27,6 +27,9 @@ WebDriver browser = new ChromeDriver();
 
 ### Make a JUnit-based test
 
+For example:
+[a link](https://github.com/dmi3aleks/WebAppTester/blob/master/src/com/test/TradingDashboardTest.java)
+
 
 ### Finding DOM elements
 
