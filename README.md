@@ -2,6 +2,10 @@
 
 ## Notes on Selenium
 
+Selenium allows automated testing of web apps using a browser driver (E.g. Chrome).
+
+It opens a browser in an automated test mode and drives the test by manipulating inputs and making assertions on observed changes in DOM elements of the page under test.
+
 ### Project Setup
 
 Download Selenium Standalone Server (JAR) from:

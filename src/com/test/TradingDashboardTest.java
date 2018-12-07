@@ -1,10 +1,12 @@
 package com.test;
 
 import static org.junit.Assert.*;
+
+import org.junit.After;
+import org.junit.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.junit.Test;
 
@@ -13,17 +15,22 @@ import java.util.Date;
 
 public class TradingDashboardTest {
 
+    private WebDriver browser;
+
     static String getCurrentTimestamp() {
 
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         return sdf.format(new Date());
     }
 
+    @Before
+    public void setup() {
+        System.setProperty("webdriver.chrome.driver","/home/dmitry/IdeaProjects/SeleniumTest/drivers/chromedriver");
+        browser = new ChromeDriver();
+    }
+
     @Test
     public void new_order_creation() {
-
-        System.setProperty("webdriver.chrome.driver","/home/dmitry/IdeaProjects/SeleniumTest/drivers/chromedriver");
-        WebDriver browser = new ChromeDriver();
 
         browser.get("http://localhost:9000");
         WebElement header = browser.findElement(By.id("in"));
@@ -48,7 +55,10 @@ public class TradingDashboardTest {
         System.out.println(String.format("New order: %s", lastOrder));
 
         assertTrue(lastOrder.contains(orderNotes));
+    }
 
+    @After
+    public void after() {
         browser.close();
     }
 
