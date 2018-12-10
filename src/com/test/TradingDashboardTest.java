@@ -5,10 +5,9 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.After;
 import org.junit.Before;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -37,7 +36,8 @@ public class TradingDashboardTest {
         browser.findElement(By.id("quantity")).sendKeys(String.valueOf(quantity));
         browser.findElement(By.id("price")).sendKeys(String.valueOf(price));
         browser.findElement(By.id("notes")).sendKeys(notes);
-        browser.findElement(By.id("btn_send_order")).click();
+        WebElement sendBtn = browser.findElement(By.id("btn_send_order"));
+        sendBtn.click();
     }
 
     @Test
@@ -64,6 +64,7 @@ public class TradingDashboardTest {
 
         browser.get(appURL);
 
+
         final String orderNotes = getCurrentTimestamp();
 
         // Send a new order
@@ -77,8 +78,19 @@ public class TradingDashboardTest {
         System.out.println(String.format("New order: %s", lastOrder.getText()));
         assertEquals(lastOrder.findElement(By.id("order_notes")).getText(), orderNotes);
 
+        JavascriptExecutor executor = (JavascriptExecutor)browser;
+        executor.executeScript("document.body.style.zoom = '0.5'");
+
         // cancel the newly created order
-        lastOrder.findElement(By.id("order_cancel")).click();
+        WebElement cancelBtn = lastOrder.findElement(By.id("order_cancel"));
+
+        Actions actions = new Actions(browser);
+        actions.moveToElement(cancelBtn).perform();
+
+        // NOTE: neither Click nor RETURN work as Cancel is wrapped/hidden in a div, using JS click instead
+        executor.executeScript("arguments[0].click();", cancelBtn);
+        //cancelBtn.click();
+        //cancelBtn.sendKeys(Keys.RETURN);
 
         WebElement status = lastOrder.findElement(By.id("order_status"));
 
