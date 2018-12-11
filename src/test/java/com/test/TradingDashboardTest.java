@@ -17,7 +17,7 @@ import java.util.Date;
 public class TradingDashboardTest {
 
     private WebDriver browser;
-    static  String appURL = "http://localhost:9000";
+    static  String appURL = "http://localhost:5000";
 
     static String getCurrentTimestamp() {
 
