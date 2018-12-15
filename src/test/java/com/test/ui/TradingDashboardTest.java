@@ -48,7 +48,7 @@ public class TradingDashboardTest {
         final String orderNotes = getCurrentTimestamp();
 
         // Send a new order
-        create_a_new_order(browser, "S", 10000, 7800, orderNotes);
+        create_a_new_order(browser, "S", 10000, 170, orderNotes);
 
         // Verify that new order got created
         WebDriverWait wait = new WebDriverWait(browser, 5);
@@ -68,7 +68,7 @@ public class TradingDashboardTest {
         final String orderNotes = getCurrentTimestamp();
 
         // Send a new order
-        create_a_new_order(browser, "S", 10000, 7800, orderNotes);
+        create_a_new_order(browser, "S", 10000, 180, orderNotes);
 
         // Verify that new order got created
         WebDriverWait wait = new WebDriverWait(browser, 5);
