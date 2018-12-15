@@ -1,7 +1,8 @@
-package com.test;
+package com.test.ui;
 
 import static org.junit.Assert.*;
 
+import com.test.common.Server;
 import org.junit.Test;
 import org.junit.After;
 import org.junit.Before;
@@ -17,7 +18,7 @@ import java.util.Date;
 public class TradingDashboardTest {
 
     private WebDriver browser;
-    static  String appURL = "http://localhost:5000";
+    static  String appURL = Server.getAppFrontEnd().getAppURL();
 
     static String getCurrentTimestamp() {
 
@@ -32,7 +33,6 @@ public class TradingDashboardTest {
     }
 
     private void create_a_new_order(final WebDriver browser, final String side, double quantity, double price, final String notes) {
-        browser.findElement(By.id("side")).sendKeys(side);
         browser.findElement(By.id("quantity")).sendKeys(String.valueOf(quantity));
         browser.findElement(By.id("price")).sendKeys(String.valueOf(price));
         browser.findElement(By.id("notes")).sendKeys(notes);
