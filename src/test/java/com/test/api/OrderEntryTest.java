@@ -3,7 +3,6 @@ package com.test.api;
 import com.test.api.model.Order;
 import com.test.common.Server;
 import io.restassured.RestAssured;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,7 +33,7 @@ public class OrderEntryTest {
 
         final String orderNotes = getCurrentTimestamp();
 
-        Order order = new Order("6758.T", "S", 1000., 150., orderNotes);
+        Order order = new Order("","6758.T", "S", 1000., 150., orderNotes);
 
         // place a new order
         given().contentType("application/json").body(order).when().post("/order/add").then().statusCode(200);

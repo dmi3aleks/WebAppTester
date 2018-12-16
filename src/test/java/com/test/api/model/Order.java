@@ -2,19 +2,30 @@ package com.test.api.model;
 
 public class Order {
 
+    private String OrderID;
     private String InstrCode;
     private String Side;
     private Double Quantity;
     private Double Price;
     private String Notes;
 
-    public Order(String InstrCode, String Side, Double Quantity, Double Price, String Notes) {
+    public Order(String OrderID, String InstrCode, String Side, Double Quantity, Double Price, String Notes) {
+        this.OrderID = OrderID;
         this.InstrCode = InstrCode;
         this.Side = Side;
         this.Quantity = Quantity;
         this.Price = Price;
         this.Notes = Notes;
     }
+
+    public String getOrderID() {
+        return OrderID;
+    }
+
+    public void setOrderID(String orderID) {
+        OrderID = orderID;
+    }
+
 
     public String getInstCode() {
         return InstrCode;
