@@ -8,9 +8,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
@@ -30,18 +32,31 @@ public class ExecutionTest {
         RestAssured.port = Server.getHTTPEndpoint().getPort();
     }
 
+    private void cancelOutstandingOrders(final String instrumentCode) {
+        // cancel all outstanding orders for a given instrument
+        List<Order> outstandingOrders = Arrays.asList(given().when().get("/order").as(Order[].class));
+        List<Order> relevantOrders = outstandingOrders.stream().
+                filter(ord -> ord.getInstCode().equals(instrumentCode) && ord.getStatus().equals("A")).
+                collect(Collectors.toList());
+        relevantOrders.forEach(order -> {
+            given().contentType("application/json").body(order).when().post("/order/delete").then().statusCode(200);
+        });
+    }
+
     @Test
-    public void trade_bw_two_orders() {
+    public void tradeBetweenTwoOrders() {
 
         final String instrumentCode = "6702.T";
 
         final String[] sides = {"S", "B"};
         List<Order> orders = new LinkedList<>();
 
+        cancelOutstandingOrders(instrumentCode);
+
         // place a pair of matching orders
         for(final String side: sides) {
             final String orderNotes = getCurrentTimestamp();
-            Order order = new Order("", instrumentCode, side, 1000., 150., orderNotes);
+            Order order = new Order("", instrumentCode, side, 1000., 150., orderNotes, "A");
             given().contentType("application/json").body(order).when().post("/order/add").then().statusCode(200);
             // verify that resulting order has been added to the order list
             Order[] registeredOrders = given().when().get("/order").as(Order[].class);
@@ -58,8 +73,8 @@ public class ExecutionTest {
         Trade[] trades = given().when().get("/trade").as(Trade[].class);
         assertTrue(trades.length > 0);
         Trade lastTrade = trades[trades.length - 1];
-        assertEquals(lastTrade.getRestingOrderID(), firstOrder.getOrderID());
-        assertEquals(lastTrade.getIncomingOrderID(), secondOrder.getOrderID());
+        assertEquals(firstOrder.getOrderID(), lastTrade.getRestingOrderID());
+        assertEquals(secondOrder.getOrderID(), lastTrade.getIncomingOrderID());
 
         assertEquals(lastTrade.getPrice(), firstOrder.getPrice());
         assertEquals(lastTrade.getQuantity(), firstOrder.getQuantity());

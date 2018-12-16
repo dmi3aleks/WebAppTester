@@ -8,14 +8,17 @@ public class Order {
     private Double Quantity;
     private Double Price;
     private String Notes;
+    private String Status;
 
-    public Order(String OrderID, String InstrCode, String Side, Double Quantity, Double Price, String Notes) {
+    public Order(String OrderID, String InstrCode, String Side,
+                 Double Quantity, Double Price, String Notes, String Status) {
         this.OrderID = OrderID;
         this.InstrCode = InstrCode;
         this.Side = Side;
         this.Quantity = Quantity;
         this.Price = Price;
         this.Notes = Notes;
+        this.Status = Status;
     }
 
     public String getOrderID() {
@@ -65,5 +68,13 @@ public class Order {
 
     public void setNotes(String Notes) {
         this.Notes = Notes;
+    }
+
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String status) {
+        this.Status = status;
     }
 }

@@ -29,11 +29,11 @@ public class OrderEntryTest {
     }
 
     @Test
-    public void new_order_creation() {
+    public void newOrderCreation() {
 
         final String orderNotes = getCurrentTimestamp();
 
-        Order order = new Order("","6758.T", "S", 1000., 150., orderNotes);
+        Order order = new Order("","6758.T", "S", 1000., 150., orderNotes, "A");
 
         // place a new order
         given().contentType("application/json").body(order).when().post("/order/add").then().statusCode(200);
