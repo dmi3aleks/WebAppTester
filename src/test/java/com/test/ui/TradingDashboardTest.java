@@ -18,7 +18,7 @@ import java.util.Date;
 public class TradingDashboardTest {
 
     private WebDriver browser;
-    static  String appURL = Server.getAppFrontEnd().getAppURL();
+    static  private String appURL = Server.getAppFrontEnd().getAppURL();
 
     static String getCurrentTimestamp() {
 
@@ -52,8 +52,15 @@ public class TradingDashboardTest {
 
         // Verify that new order got created
         WebDriverWait wait = new WebDriverWait(browser, 5);
-        final WebElement lastOrder = browser.findElement(By.xpath("//*[@id=\"orders\"]/tr[2]"));
-        wait.until(ExpectedConditions.textToBePresentInElement(lastOrder, orderNotes));
+
+        final WebElement orders = browser.findElement(By.xpath("//*[@id=\"orders\"]"));
+        wait.until(ExpectedConditions.textToBePresentInElement(orders, orderNotes));
+
+        final WebElement lastOrder = browser.findElement(By.xpath("//*[@id=\"orders\"]/tbody[2]/tr"));
+        final WebElement lastOrderNotes = lastOrder.findElement(By.id("order_notes"));
+
+        System.out.println(String.format("New order: %s", lastOrder.getText()));
+        assertEquals(lastOrderNotes.getText(), orderNotes);
 
         System.out.println(String.format("New order: %s", lastOrder.getText()));
         assertEquals(lastOrder.findElement(By.id("order_notes")).getText(), orderNotes);
@@ -72,11 +79,15 @@ public class TradingDashboardTest {
 
         // Verify that new order got created
         WebDriverWait wait = new WebDriverWait(browser, 5);
-        final WebElement lastOrder = browser.findElement(By.xpath("//*[@id=\"orders\"]/tr[2]"));
-        wait.until(ExpectedConditions.textToBePresentInElement(lastOrder, orderNotes));
+
+        final WebElement orders = browser.findElement(By.xpath("//*[@id=\"orders\"]"));
+        wait.until(ExpectedConditions.textToBePresentInElement(orders, orderNotes));
+
+        final WebElement lastOrder = browser.findElement(By.xpath("//*[@id=\"orders\"]/tbody[2]/tr"));
+        final WebElement lastOrderNotes = lastOrder.findElement(By.id("order_notes"));
 
         System.out.println(String.format("New order: %s", lastOrder.getText()));
-        assertEquals(lastOrder.findElement(By.id("order_notes")).getText(), orderNotes);
+        assertEquals(lastOrderNotes.getText(), orderNotes);
 
         JavascriptExecutor executor = (JavascriptExecutor)browser;
         executor.executeScript("document.body.style.zoom = '0.5'");
