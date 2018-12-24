@@ -3,6 +3,7 @@ package com.test.api;
 import com.test.api.model.Order;
 import com.test.api.model.Trade;
 import com.test.common.Server;
+import com.test.util.Generator;
 import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,12 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ExecutionTest {
-
-    static String getCurrentTimestamp() {
-
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        return sdf.format(new Date());
-    }
 
     @Before
     public void setup() {
@@ -53,16 +48,17 @@ public class ExecutionTest {
 
         cancelOutstandingOrders(instrumentCode);
 
+        final Double orderPrice = Generator.getOrderPrice();
+
         // place a pair of matching orders
         for(final String side: sides) {
-            final String orderNotes = getCurrentTimestamp();
-            Order order = new Order("", instrumentCode, side, 1000., 150., orderNotes, "A");
+            Order order = new Order("", instrumentCode, side, 1000., orderPrice, "Auto Test", "A");
             given().contentType("application/json").body(order).when().post("/order/add").then().statusCode(200);
             // verify that resulting order has been added to the order list
             Order[] registeredOrders = given().when().get("/order").as(Order[].class);
             assertTrue(registeredOrders.length > 0);
-            Order lastOrder = registeredOrders[registeredOrders.length - 1];
-            assertEquals(lastOrder.getNotes(), orderNotes);
+            Order lastOrder = registeredOrders[0];
+            assertEquals(orderPrice, lastOrder.getPrice());
             orders.add(lastOrder);
         }
 
@@ -72,7 +68,7 @@ public class ExecutionTest {
         // verify that orders got matched
         Trade[] trades = given().when().get("/trade").as(Trade[].class);
         assertTrue(trades.length > 0);
-        Trade lastTrade = trades[trades.length - 1];
+        Trade lastTrade = trades[0];
         assertEquals(firstOrder.getOrderID(), lastTrade.getRestingOrderID());
         assertEquals(secondOrder.getOrderID(), lastTrade.getIncomingOrderID());
 

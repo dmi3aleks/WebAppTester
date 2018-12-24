@@ -3,6 +3,7 @@ package com.test.ui;
 import static org.junit.Assert.*;
 
 import com.test.common.Server;
+import com.test.util.Generator;
 import org.junit.Test;
 import org.junit.After;
 import org.junit.Before;
@@ -20,22 +21,15 @@ public class TradingDashboardTest {
     private WebDriver browser;
     static  private String appURL = Server.getAppFrontEnd().getAppURL();
 
-    static String getCurrentTimestamp() {
-
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        return sdf.format(new Date());
-    }
-
     @Before
     public void setup() {
         System.setProperty("webdriver.chrome.driver","drivers/chromedriver");
         browser = new ChromeDriver();
     }
 
-    private void create_a_new_order(final WebDriver browser, final String side, double quantity, double price, final String notes) {
+    private void create_a_new_order(final WebDriver browser, final String side, double quantity, double price) {
         browser.findElement(By.id("quantity")).sendKeys(String.valueOf(quantity));
         browser.findElement(By.id("price")).sendKeys(String.valueOf(price));
-        browser.findElement(By.id("notes")).sendKeys(notes);
         WebElement sendBtn = browser.findElement(By.id("btn_send_order"));
         sendBtn.click();
     }
@@ -45,25 +39,24 @@ public class TradingDashboardTest {
 
         browser.get(appURL);
 
-        final String orderNotes = getCurrentTimestamp();
+        final Double orderPrice = Generator.getOrderPrice();
+        final Long price = Math.round(orderPrice);
+        final String orderPriceString = price.toString();
 
         // Send a new order
-        create_a_new_order(browser, "S", 10000, 170, orderNotes);
+        create_a_new_order(browser, "S", 10000, orderPrice);
 
         // Verify that new order got created
         WebDriverWait wait = new WebDriverWait(browser, 5);
 
         final WebElement orders = browser.findElement(By.xpath("//*[@id=\"orders\"]"));
-        wait.until(ExpectedConditions.textToBePresentInElement(orders, orderNotes));
+        wait.until(ExpectedConditions.textToBePresentInElement(orders, orderPriceString));
 
         final WebElement lastOrder = browser.findElement(By.xpath("//*[@id=\"orders\"]/tbody[2]/tr"));
-        final WebElement lastOrderNotes = lastOrder.findElement(By.id("order_notes"));
+        final WebElement lastOrderPrice = lastOrder.findElement(By.id("order_price"));
 
         System.out.println(String.format("New order: %s", lastOrder.getText()));
-        assertEquals(lastOrderNotes.getText(), orderNotes);
-
-        System.out.println(String.format("New order: %s", lastOrder.getText()));
-        assertEquals(lastOrder.findElement(By.id("order_notes")).getText(), orderNotes);
+        assertEquals(orderPriceString, lastOrderPrice.getText());
     }
 
     @Test
@@ -72,22 +65,24 @@ public class TradingDashboardTest {
         browser.get(appURL);
 
 
-        final String orderNotes = getCurrentTimestamp();
+        final Double orderPrice = Generator.getOrderPrice();
+        final Long price = Math.round(orderPrice);
+        final String orderPriceString = price.toString();
 
         // Send a new order
-        create_a_new_order(browser, "S", 10000, 180, orderNotes);
+        create_a_new_order(browser, "S", 10000, orderPrice);
 
         // Verify that new order got created
         WebDriverWait wait = new WebDriverWait(browser, 5);
 
         final WebElement orders = browser.findElement(By.xpath("//*[@id=\"orders\"]"));
-        wait.until(ExpectedConditions.textToBePresentInElement(orders, orderNotes));
+        wait.until(ExpectedConditions.textToBePresentInElement(orders, orderPriceString));
 
         final WebElement lastOrder = browser.findElement(By.xpath("//*[@id=\"orders\"]/tbody[2]/tr"));
-        final WebElement lastOrderNotes = lastOrder.findElement(By.id("order_notes"));
+        final WebElement lastOrderPrice = lastOrder.findElement(By.id("order_price"));
 
         System.out.println(String.format("New order: %s", lastOrder.getText()));
-        assertEquals(lastOrderNotes.getText(), orderNotes);
+        assertEquals(lastOrderPrice.getText(), orderPriceString);
 
         JavascriptExecutor executor = (JavascriptExecutor)browser;
         executor.executeScript("document.body.style.zoom = '0.5'");
