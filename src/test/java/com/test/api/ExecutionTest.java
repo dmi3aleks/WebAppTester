@@ -39,13 +39,13 @@ public class ExecutionTest {
     @Test
     public void tradeBetweenTwoOrders() {
 
-        final String instrumentCode = "6702.T";
+        final String instrumentCode = "6758.T";
 
         final String[] sides = {"S", "B"};
 
         cancelOutstandingOrders(instrumentCode);
 
-        for(int i = 0; i < 512; i++) {
+        for(int i = 0; i < 256; i++) {
 
             List<Order> orders = new LinkedList<>();
             final Double orderPrice = Generator.getOrderPrice();
