@@ -45,7 +45,7 @@ public class ExecutionTest {
 
         cancelOutstandingOrders(instrumentCode);
 
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < 512; i++) {
 
             List<Order> orders = new LinkedList<>();
             final Double orderPrice = Generator.getOrderPrice();

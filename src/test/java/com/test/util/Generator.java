@@ -13,6 +13,8 @@ public class Generator {
 
     public static Double getOrderPrice() {
         final String currentTime = getCurrentTimestamp();
-        return Double.valueOf(currentTime.substring(currentTime.length() - 3));
+        final Double base = Double.valueOf(currentTime.substring(currentTime.length() - 3));
+        final Double offset = Math.random() * 500.;
+        return Double.valueOf(Math.round(base + offset));
     }
 }
