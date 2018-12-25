@@ -31,10 +31,10 @@ public class OrderEntryTest {
         Order order = new Order("","6758.T", "S", 1000., orderPrice, "Auto Test", "A");
 
         // place a new order
-        given().contentType("application/json").body(order).when().post("/order/add").then().statusCode(200);
+        given().contentType("application/json").body(order).when().post("/api/order/add").then().statusCode(200);
 
         // verify that resulting order has been added to the order list
-        Order[] orders = given().when().get("/order").as(Order[].class);
+        Order[] orders = given().when().get("/api/order").as(Order[].class);
 
         assertTrue(orders.length > 0);
         Order lastOrder = orders[0];

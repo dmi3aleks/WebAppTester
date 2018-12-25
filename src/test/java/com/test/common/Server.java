@@ -22,8 +22,8 @@ public class Server {
         return String.format("%s:%d", host, port);
     }
 
-    private static Server httpEndpoint = new Server("http://localhost", 8080);
-    private static Server appFrontEnd = new Server("http://localhost", 5000);
+    private static Server httpEndpoint = new Server("http://simulator.dmitryaleks.com", 8080);
+    private static Server appFrontEnd = new Server("http://trade.dmitryaleks.com", 80);
 
     public static Server getHTTPEndpoint() {
         return httpEndpoint;

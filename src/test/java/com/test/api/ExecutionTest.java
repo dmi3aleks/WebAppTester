@@ -8,9 +8,7 @@ import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,12 +27,12 @@ public class ExecutionTest {
 
     private void cancelOutstandingOrders(final String instrumentCode) {
         // cancel all outstanding orders for a given instrument
-        List<Order> outstandingOrders = Arrays.asList(given().when().get("/order").as(Order[].class));
+        List<Order> outstandingOrders = Arrays.asList(given().when().get("/api/order").as(Order[].class));
         List<Order> relevantOrders = outstandingOrders.stream().
                 filter(ord -> ord.getInstCode().equals(instrumentCode) && ord.getStatus().equals("A")).
                 collect(Collectors.toList());
         relevantOrders.forEach(order -> {
-            given().contentType("application/json").body(order).when().post("/order/delete").then().statusCode(200);
+            given().contentType("application/json").body(order).when().post("/api/order/delete").then().statusCode(200);
         });
     }
 
@@ -44,36 +42,39 @@ public class ExecutionTest {
         final String instrumentCode = "6702.T";
 
         final String[] sides = {"S", "B"};
-        List<Order> orders = new LinkedList<>();
 
         cancelOutstandingOrders(instrumentCode);
 
-        final Double orderPrice = Generator.getOrderPrice();
+        for(int i = 0; i < 100; i++) {
 
-        // place a pair of matching orders
-        for(final String side: sides) {
-            Order order = new Order("", instrumentCode, side, 1000., orderPrice, "Auto Test", "A");
-            given().contentType("application/json").body(order).when().post("/order/add").then().statusCode(200);
-            // verify that resulting order has been added to the order list
-            Order[] registeredOrders = given().when().get("/order").as(Order[].class);
-            assertTrue(registeredOrders.length > 0);
-            Order lastOrder = registeredOrders[0];
-            assertEquals(orderPrice, lastOrder.getPrice());
-            orders.add(lastOrder);
+            List<Order> orders = new LinkedList<>();
+            final Double orderPrice = Generator.getOrderPrice();
+
+            // place a pair of matching orders
+            for (final String side : sides) {
+                Order order = new Order("", instrumentCode, side, 1000., orderPrice, "Auto Test", "A");
+                given().contentType("application/json").body(order).when().post("/api/order/add").then().statusCode(200);
+                // verify that resulting order has been added to the order list
+                Order[] registeredOrders = given().when().get("/api/order").as(Order[].class);
+                assertTrue(registeredOrders.length > 0);
+                Order lastOrder = registeredOrders[0];
+                assertEquals(orderPrice, lastOrder.getPrice());
+                orders.add(lastOrder);
+            }
+
+            final Order firstOrder = orders.get(0);
+            final Order secondOrder = orders.get(1);
+
+            // verify that orders got matched
+            Trade[] trades = given().when().get("/api/trade").as(Trade[].class);
+            assertTrue(trades.length > 0);
+            Trade lastTrade = trades[0];
+            assertEquals(firstOrder.getOrderID(), lastTrade.getRestingOrderID());
+            assertEquals(secondOrder.getOrderID(), lastTrade.getIncomingOrderID());
+
+            assertEquals(lastTrade.getPrice(), firstOrder.getPrice());
+            assertEquals(lastTrade.getQuantity(), firstOrder.getQuantity());
         }
-
-        final Order firstOrder = orders.get(0);
-        final Order secondOrder = orders.get(1);
-
-        // verify that orders got matched
-        Trade[] trades = given().when().get("/trade").as(Trade[].class);
-        assertTrue(trades.length > 0);
-        Trade lastTrade = trades[0];
-        assertEquals(firstOrder.getOrderID(), lastTrade.getRestingOrderID());
-        assertEquals(secondOrder.getOrderID(), lastTrade.getIncomingOrderID());
-
-        assertEquals(lastTrade.getPrice(), firstOrder.getPrice());
-        assertEquals(lastTrade.getQuantity(), firstOrder.getQuantity());
     }
 
 }
