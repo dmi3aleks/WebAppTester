@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +46,24 @@ public class ExecutionTest {
 
         cancelOutstandingOrders(instrumentCode);
 
-        for(int i = 0; i < 256; i++) {
+        final long maxIterations = 256;
+        final long maxRateIterSec = 5;
+
+        final long minTimeBetweenIterationsMS = 1000/maxRateIterSec;
+        final long maxItemsToFetch = 1;
+        long previousIterationTime = 0;
+
+        for(long i = 0; i < maxIterations; i++) {
+
+            long currentIterationTime = new Date().getTime();
+            if (currentIterationTime - previousIterationTime < minTimeBetweenIterationsMS) {
+                try {
+                    Thread.sleep(previousIterationTime + minTimeBetweenIterationsMS - currentIterationTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            previousIterationTime = new Date().getTime();
 
             List<Order> orders = new LinkedList<>();
             final Double orderPrice = Generator.getOrderPrice();
@@ -55,7 +73,7 @@ public class ExecutionTest {
                 Order order = new Order("", instrumentCode, side, 1000., orderPrice, "Auto Test", "A");
                 given().contentType("application/json").body(order).when().post("/api/order/add").then().statusCode(200);
                 // verify that resulting order has been added to the order list
-                Order[] registeredOrders = given().when().get("/api/order").as(Order[].class);
+                Order[] registeredOrders = given().when().get(String.format("/api/order?limit=%d", maxItemsToFetch)).as(Order[].class);
                 assertTrue(registeredOrders.length > 0);
                 Order lastOrder = registeredOrders[0];
                 assertEquals(orderPrice, lastOrder.getPrice());
@@ -66,7 +84,7 @@ public class ExecutionTest {
             final Order secondOrder = orders.get(1);
 
             // verify that orders got matched
-            Trade[] trades = given().when().get("/api/trade").as(Trade[].class);
+            Trade[] trades = given().when().get(String.format("/api/trade", maxItemsToFetch)).as(Trade[].class);
             assertTrue(trades.length > 0);
             Trade lastTrade = trades[0];
             assertEquals(firstOrder.getOrderID(), lastTrade.getRestingOrderID());
