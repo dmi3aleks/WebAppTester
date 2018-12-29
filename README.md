@@ -1,6 +1,12 @@
-# Selenium-based test for the Trading Dashboard web app
+# Automated tests for Trading Simulator and Trading Dashboard Web App
 
-## Notes on Selenium
+## Tests for Trading Simulator API
+
+Theses tests are facilitated by REST Assured.
+
+## Front-end tests
+
+Theese tests are done using Selenium.
 
 Selenium allows automated testing of web apps using a browser driver (E.g. Chrome).
 

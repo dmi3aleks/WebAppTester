@@ -71,12 +71,23 @@ public class ExecutionTest {
             // place a pair of matching orders
             for (final String side : sides) {
                 Order order = new Order("", instrumentCode, side, 1000., orderPrice, "Auto Test", "A");
-                given().contentType("application/json").body(order).when().post("/api/order/add").then().statusCode(200);
+
+                // place a new order
+                Integer orderId =
+                        given().
+                                contentType("application/json").body(order)
+                                .when().
+                                post("/api/order/add")
+                                .then()
+                                .statusCode(200)
+                                .extract().path("OrderID");
+
                 // verify that resulting order has been added to the order list
                 Order[] registeredOrders = given().when().get(String.format("/api/order?limit=%d", maxItemsToFetch)).as(Order[].class);
                 assertTrue(registeredOrders.length > 0);
                 Order lastOrder = registeredOrders[0];
-                assertEquals(orderPrice, lastOrder.getPrice());
+                assertEquals(lastOrder.getOrderID(), String.valueOf(orderId));
+                assertEquals(lastOrder.getPrice(), orderPrice);
                 orders.add(lastOrder);
             }
 
