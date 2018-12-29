@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 public class MissingOrderAttributesTest {
 
+    static final String addOrderURLSuffix = "api/order/add";
 
     @Before
     public void setup() {
@@ -25,11 +26,11 @@ public class MissingOrderAttributesTest {
         Order order = new Order("","6758.T", "S", 1000., null, "Auto Test", "A");
 
         // place a new order with price attribute missing
-        Integer message =
+        String message =
                 given().
                     contentType("application/json").body(order)
                 .when().
-                    post("/api/order/add")
+                    post(addOrderURLSuffix)
                 .then()
                     .statusCode(400)
                     .extract().path("message");
@@ -44,14 +45,14 @@ public class MissingOrderAttributesTest {
         Order order = new Order("","6758.T", "S", null, orderPrice, "Auto Test", "A");
 
         // place a new order with price attribute missing
-        Integer message =
+        String message =
                 given().
-                        contentType("application/json").body(order)
-                        .when().
-                        post("/api/order/add")
-                        .then()
-                        .statusCode(400)
-                        .extract().path("message");
+                    contentType("application/json").body(order)
+                .when().
+                    post(addOrderURLSuffix)
+                .then()
+                    .statusCode(400)
+                    .extract().path("message");
 
         assertEquals(message, "Quantity is missing");
     }
