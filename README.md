@@ -1,4 +1,13 @@
-# Automated tests for Trading Simulator and Trading Dashboard Web App
+# Automated functional/integration test suite for Trading Simulator and Trading Dashboard Web App
+
+## Hot to build and run automated test suite
+
+Prerequisite: Chrome broser installed.
+
+```
+git clone https://github.com/dmitryaleks/TradingSimulatorTest.git
+mvn test
+```
 
 ## Tests for Trading Simulator API
 
