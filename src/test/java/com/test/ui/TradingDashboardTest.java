@@ -27,7 +27,7 @@ public class TradingDashboardTest {
         browser = new ChromeDriver();
     }
 
-    private void create_a_new_order(final WebDriver browser, final String side, double quantity, double price) {
+    private void create_a_new_order(final WebDriver browser, final String side, long quantity, long price) {
         browser.findElement(By.id("quantity")).sendKeys(String.valueOf(quantity));
         browser.findElement(By.id("price")).sendKeys(String.valueOf(price));
         WebElement sendBtn = browser.findElement(By.id("btn_send_order"));
@@ -44,7 +44,7 @@ public class TradingDashboardTest {
         final String orderPriceString = price.toString();
 
         // Send a new order
-        create_a_new_order(browser, "S", 10000, orderPrice);
+        create_a_new_order(browser, "S", 10000, price);
 
         // Verify that new order got created
         WebDriverWait wait = new WebDriverWait(browser, 5);
@@ -64,13 +64,12 @@ public class TradingDashboardTest {
 
         browser.get(appURL);
 
-
         final Double orderPrice = Generator.getOrderPrice();
         final Long price = Math.round(orderPrice);
         final String orderPriceString = price.toString();
 
         // Send a new order
-        create_a_new_order(browser, "S", 10000, orderPrice);
+        create_a_new_order(browser, "S", 10000, price);
 
         // Verify that new order got created
         WebDriverWait wait = new WebDriverWait(browser, 5);

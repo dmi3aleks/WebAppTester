@@ -46,7 +46,7 @@ public class ExecutionTest {
 
         cancelOutstandingOrders(instrumentCode);
 
-        final long maxIterations = 256;
+        final long maxIterations = 8;
         final long maxRateIterSec = 5;
 
         final long minTimeBetweenIterationsMS = 1000/maxRateIterSec;
