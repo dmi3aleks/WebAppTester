@@ -4,7 +4,7 @@
 
 ## Hot to build and run automated test suite
 
-Prerequisite: Chrome broser installed.
+Prerequisite: Chrome browser installed.
 
 ```
 git clone https://github.com/dmitryaleks/TradingSimulatorTest.git
