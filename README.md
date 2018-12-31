@@ -1,5 +1,7 @@
 # Automated functional/integration test suite for Trading Simulator and Trading Dashboard Web App
 
+[![Build Status](https://travis-ci.com/dmitryaleks/trading-simulator-test.svg?branch=master)](https://travis-ci.com/dmitryaleks/trading-simulator-test)
+
 ## Hot to build and run automated test suite
 
 Prerequisite: Chrome broser installed.
