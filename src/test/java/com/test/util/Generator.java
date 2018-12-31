@@ -5,6 +5,8 @@ import java.util.Date;
 
 public class Generator {
 
+    TEST_TRAVIS_CI_BUILD
+
     public static String getCurrentTimestamp() {
 
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");

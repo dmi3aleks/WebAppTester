@@ -13,9 +13,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class TradingDashboardTest {
 
     private WebDriver browser;
