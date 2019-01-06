@@ -1,20 +1,21 @@
 package com.test.util;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class Generator {
 
-    public static String getCurrentTimestamp() {
-
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        return sdf.format(new Date());
-    }
+    static double price = 500.;
 
     public static Double getOrderPrice() {
-        final String currentTime = getCurrentTimestamp();
-        final Double base = Double.valueOf(currentTime.substring(currentTime.length() - 3));
-        final Double offset = Math.random() * 500.;
-        return Double.valueOf(Math.round(base + offset));
+        // biased random walk with a positive trend
+        final Double biasPct = 5.;
+
+        final Double offset = Math.random() * 3.;
+        if (offset > 1) {
+            if (offset <= 2. + biasPct/100.) {
+                price += 1;
+            } else {
+                price -= 1;
+            }
+        }
+        return price;
     }
 }
